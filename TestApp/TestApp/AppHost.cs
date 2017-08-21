@@ -23,9 +23,9 @@ namespace TestApp
             {
                 db.CreateTable<TypeWithEnum>();
 
-                db.Insert(new TypeWithEnum { Id = 1, Name = "Value1", SomeEnum = SomeEnum.Value1, SomeEnumAsInt = SomeEnumAsInt.Value1 });
-                db.Insert(new TypeWithEnum { Id = 2, Name = "Value2", SomeEnum = SomeEnum.Value2, SomeEnumAsInt = SomeEnumAsInt.Value2 });
-                db.Insert(new TypeWithEnum { Id = 3, Name = "Value3", SomeEnum = SomeEnum.Value3, SomeEnumAsInt = SomeEnumAsInt.Value3 });
+                db.Insert(new TypeWithEnum { Id = 1, Name = "Value1", SomeEnum = SomeEnum.Value1, NSomeEnum = SomeEnum.Value1, SomeEnumAsInt = SomeEnumAsInt.Value1, NSomeEnumAsInt = SomeEnumAsInt.Value1 });
+                db.Insert(new TypeWithEnum { Id = 2, Name = "Value2", SomeEnum = SomeEnum.Value2, NSomeEnum = SomeEnum.Value2, SomeEnumAsInt = SomeEnumAsInt.Value2, NSomeEnumAsInt = SomeEnumAsInt.Value2 });
+                db.Insert(new TypeWithEnum { Id = 3, Name = "Value3", SomeEnum = SomeEnum.Value3, NSomeEnum = SomeEnum.Value3, SomeEnumAsInt = SomeEnumAsInt.Value3, NSomeEnumAsInt = SomeEnumAsInt.Value3 });
             }
         }
     }
@@ -52,6 +52,8 @@ namespace TestApp
         public string Name { get; set; }
         public SomeEnum SomeEnum { get; set; }
         public SomeEnumAsInt SomeEnumAsInt { get; set; }
+        public SomeEnum? NSomeEnum { get; set; }
+        public SomeEnumAsInt? NSomeEnumAsInt { get; set; }
     }
 
     [Route("/query-enums")]
