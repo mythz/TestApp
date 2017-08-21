@@ -1,27 +1,61 @@
-﻿using Funq;
+﻿using System.Net;
+using Funq;
 using ServiceStack;
-using TestApp.ServiceInterface;
+using ServiceStack.Data;
+using ServiceStack.DataAnnotations;
+using ServiceStack.OrmLite;
 
 namespace TestApp
 {
-    //VS.NET Template Info: https://servicestack.net/vs-templates/EmptyAspNet
     public class AppHost : AppHostBase
     {
-        /// <summary>
-        /// Base constructor requires a Name and Assembly where web service implementation is located
-        /// </summary>
         public AppHost()
             : base("TestApp", typeof(MyServices).Assembly) { }
 
-        /// <summary>
-        /// Application specific configuration
-        /// This method should initialize any IoC resources utilized by your web service classes.
-        /// </summary>
         public override void Configure(Container container)
         {
-            //Config examples
-            //this.Plugins.Add(new PostmanFeature());
-            //this.Plugins.Add(new CorsFeature());
+            container.Register<IDbConnectionFactory>(
+                c => new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider));
+
+            Plugins.Add(new AutoQueryFeature());
+
+            using (var db = container.Resolve<IDbConnectionFactory>().Open())
+            {
+                db.CreateTable<TypeWithEnum>();
+
+                db.Insert(new TypeWithEnum { Id = 1, Name = "Value1", SomeEnum = SomeEnum.Value1, SomeEnumAsInt = SomeEnumAsInt.Value1 });
+                db.Insert(new TypeWithEnum { Id = 2, Name = "Value2", SomeEnum = SomeEnum.Value2, SomeEnumAsInt = SomeEnumAsInt.Value2 });
+                db.Insert(new TypeWithEnum { Id = 3, Name = "Value3", SomeEnum = SomeEnum.Value3, SomeEnumAsInt = SomeEnumAsInt.Value3 });
+            }
         }
     }
+
+
+    [EnumAsInt]
+    public enum SomeEnumAsInt
+    {
+        Value1 = 1,
+        Value2 = 2,
+        Value3 = 3,
+    }
+
+    public enum SomeEnum
+    {
+        Value1 = 1,
+        Value2 = 2,
+        Value3 = 3
+    }
+
+    public class TypeWithEnum
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public SomeEnum SomeEnum { get; set; }
+        public SomeEnumAsInt SomeEnumAsInt { get; set; }
+    }
+
+    [Route("/query-enums")]
+    public class QueryTypeWithEnums : QueryDb<TypeWithEnum> {}
+
+    public class MyServices : Service {}
 }
